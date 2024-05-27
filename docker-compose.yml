@@ -1,0 +1,142 @@
+x-environment-defaults: &environment-defaults
+  DEBUG: "False"
+  DB_PASS: 123
+  DB_NAME: "db01"
+  DB_USER: "dbuser"
+  DB_HOST: "postgres"
+  DB_PASSWORD: 123
+  DB_PORT: 5432
+  CELERY_BROKER_URL: "redis://redis:6379/0"
+  CELERY_RESULT_BACKEND: "redis://redis:6379/0"
+  DJANGO_SETTINGS_MODULE: bot_reminder.settings
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: bot_DB
+    restart: always
+    environment:
+      TZ: "Asia/Manila"
+      PGTZ: "Asia/Manila"
+      POSTGRES_PASSWORD: 123
+      POSTGRES_USER: dbuser
+      POSTGRES_DB: db01
+      POSTGRES_INITDB_ARGS: "-A md5"
+    ports:
+      - "54321:5432"
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    networks:
+      - bot-network
+
+  bot_whatsapp:
+    container_name: bot_WHATSAPP
+    build:
+      context: ./bot_reminder
+    ports:
+      - "8000:8000"
+    depends_on:
+      - celery
+      - redis
+      - postgres
+    expose:
+      - 8000
+    environment:
+      <<: *environment-defaults
+    networks:
+      - bot-network
+    volumes:
+      - static_volume:/app/static
+
+  bot_telegram:
+    container_name: bot_TELEGRAM
+    build:
+      context: ./telegram_bot
+    depends_on:
+      - celery
+      - redis
+      - postgres
+    environment:
+      <<: *environment-defaults
+      TZ: "Asia/Manila"
+    networks:
+      - bot-network
+
+  redis:
+    container_name: bot_REDIS
+    image: redis:latest
+    ports:
+      - "16379:6379"
+    networks:
+      - bot-network
+    environment:
+      TZ: "Asia/Manila"
+
+  celery:
+    container_name: bot_CELERY
+    build:
+      context: ./bot_reminder
+    command: celery -A celery_app.app worker -l INFO -P eventlet
+    volumes:
+      - ./bot_reminder:/app
+    depends_on:
+      - redis
+      - postgres
+    networks:
+      - bot-network
+    environment:
+      <<: *environment-defaults
+
+  celery-beat:
+    container_name: bot_BEAT
+    build:
+      context: ./bot_reminder
+    command: celery -A celery_app.app beat --loglevel=info
+    volumes:
+      - ./bot_reminder:/app
+    depends_on:
+      - celery
+      - redis
+      - postgres
+    networks:
+      - bot-network
+    environment:
+      <<: *environment-defaults
+
+  flower:
+    container_name: bot_FLOWER
+    build:
+      context: ./bot_reminder
+    command: celery -A celery_app.app flower --loglevel=info
+    volumes:
+      - ./bot_reminder:/app
+    depends_on:
+      - celery
+      - redis
+      - postgres
+    ports:
+      - '5555:5555'
+    networks:
+      - bot-network
+    environment:
+      <<: *environment-defaults
+
+  nginx:
+    image: nginx:latest
+    container_name: bot_NGINX
+    volumes:
+      - ./conf/nginx.conf:/etc/nginx/nginx.conf
+      - static_volume:/static
+    ports:
+      - "80:80"
+    networks:
+      - bot-network
+    depends_on:
+      - bot_whatsapp
+
+networks:
+  bot-network:
+    driver: bridge
+
+volumes:
+  static_volume:
