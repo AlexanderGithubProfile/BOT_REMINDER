@@ -1,6 +1,6 @@
 # ReminderBot: WhatsApp & Telegram AI Notes
 -  Удобный чат-бот для организации вашего дня: напоминания, прогноз погоды на неделю и утренние предупреждения о возможных осадках
-- Основные модули программы расположены в папке [**whatsapp_bot**](.bot_reminder/whatsapp_bot) и [**telegram_bot**](./telegram_bot)
+- Основные модули программы расположены в папке [**whatsapp_bot**](./bot_reminder/whatsapp_bot) и [**telegram_bot**](./telegram_bot)
 
 
 [English](./README_en.md) | [Русский](./README.md)
