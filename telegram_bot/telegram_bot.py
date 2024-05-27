@@ -38,7 +38,7 @@ async def help_handler(message: Message, bot: Bot) -> None:
 # Кнопка 'info'
 @dp.message(Command('info'))
 async def info_handler(message: Message, bot: Bot) -> None:
-    await message.answer_photo(types.FSInputFile(path='1.png'),
+    await message.answer_photo(types.FSInputFile(path='assets/1.png'),
                                caption=f'{html.bold("GITHUB :")}\ngithub.com/AlexanderGithubProfile/WHATSAPP_BOT_REMINDER\n\n{html.bold("TELEGRAM :")}\n@weather_tool_bot \n(https://t.me/weather_tool_bot)')
 
 # Основной модуль обработки сообщений
@@ -49,7 +49,7 @@ async def echo_handler(message: Message) -> None:
 # Реакция на кнопки "info"
 @dp.callback_query(lambda query: query.data == 'info')
 async def info_handler(query: types.CallbackQuery):
-    await query.message.answer_photo(types.FSInputFile(path='1.png'),
+    await query.message.answer_photo(types.FSInputFile(path='assets/1.png'),
                                      caption=f'{html.bold("GITHUB :")}\ngithub.com/AlexanderGithubProfile/WHATSAPP_BOT_REMINDER\n\n{html.bold("TELEGRAM :")}\n@weather_tool_bot \n(https://t.me/weather_tool_bot)')
 
 # Реакция на кнопки "пример команд"

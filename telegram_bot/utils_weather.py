@@ -6,6 +6,14 @@ from datetime import datetime
 from datetime import datetime as dt
 
 
+# API запрос к сервису погоды
+async def forecast_precipitation(city):
+    url = f"http://api.openweathermap.org/data/2.5/forecast?q={city}&units=metric&cnt=56&lang=ru&appid={os.getenv('OPEN_WEATHER_MAP_API')}"
+    response = requests.get(url).json()
+    if response['cod'] == '404':
+        return None
+    return response
+
 #Модуль обработки данных из сервиса погоды
 async def weather_forecast(response, user):
     # Словарь для хранения температур, вероятности дождя и иконок погоды по дням
@@ -67,6 +75,13 @@ async def weather_forecast(response, user):
             header += f"{weekday_names[date.weekday()]}: <b>{min_temp:.0f}°-{max_temp:.0f}°</b> {weather_icons[max(data['weather_icons'], key=data['weather_icons'].count)]}\n"
     return header
 
+# Проверка вероятности осадков
+async def check_precipitation(city_name):
+    url = f"http://api.openweathermap.org/data/2.5/forecast?q={city_name}&units=metric&cnt=20&lang=ru&appid={os.getenv('OPEN_WEATHER_MAP_API')}"
+    response = requests.get(url).json()
+    if response['cod'] == '404':
+        return None
+    return response
 
 # Модуль провверки возможных осадков для списка подписанных на уведомления(НАЧАЛО)
 async def check_precipitation(city_name):

@@ -11,7 +11,7 @@
 
 ## Usage 
 A smart bot with advanced voice notification features in reminders, forecasts, and precipitation alerts:
-> - **voice notification features** - add the word "voice" at the end of the reminder, implemented through ChatGPT and ElevenLabs, sample response in the root directory [**output.mp3**](./telegram_bot/output.mp3), see Telegram screenshot  
+> - **voice notification features** - add the word "voice" at the end of the reminder, implemented through ChatGPT and ElevenLabs, sample response in the root directory [**output.mp3**](telegram_bot/assets/output.mp3), see Telegram screenshot  
 > - **precipitation alerts** - activated by the command "precipitation" and the name of the city, the bot will send a notification at 6:00 AM if precipitation is expected that day.  
 > - **weather forecast** - command "weather" and the name of the city
 
