@@ -2,9 +2,8 @@
 -  Удобный чат-бот для организации вашего дня: напоминания, прогноз погоды на неделю и утренние предупреждения о возможных осадках
 - Основные модули программы расположены в папке [**whatsapp_bot**](./whatsapp_bot) и [**telegram_bot**](./telegram_bot)
 
- <p>
-  <a href="https://github.com/AlexanderGithubProfile/WHATSAPP_BOT_REMINDER/blob/ef9176c4deb1eea0f5a3f4f6f2b63902b6e993f7/README_en.md">English</a> | <a href="https://github.com/AlexanderGithubProfile/WHATSAPP_BOT_REMINDER/blob/ef9176c4deb1eea0f5a3f4f6f2b63902b6e993f7/README.md">Русский</a>
-</p>  
+
+[English](./README_en.md) | [Русский](./README.md)
 
 <p align="left">
  <img src="img/01_whatsapp_1.png" width="400">
