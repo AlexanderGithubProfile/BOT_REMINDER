@@ -4,9 +4,10 @@ import numpy as np
 from datetime import timedelta
 from datetime import datetime
 from .twilio import send_reminders
+from typing import Any, Dict, List, Optional, Tuple, Union
 
-# Модуль провверки возможных осадков для списка подписанных на уведомления(НАЧАЛО)
-def check_precipitation(city_name):
+def check_precipitation(city_name: str) -> Optional[Tuple[str, str, List[Tuple[float, datetime]]]]:
+    """Модуль провверки возможных осадков для списка подписанных на уведомления(НАЧАЛО)"""
     try:
         open_weather_token = os.getenv('OPEN_WEATHER_MAP_API')
         url = f"http://api.openweathermap.org/data/2.5/forecast?q={city_name}&units=metric&cnt=20&lang=ru&appid={open_weather_token}"
@@ -14,19 +15,20 @@ def check_precipitation(city_name):
         reminder_str_telegram, reminder_str_whatsapp, rain_probabilities = weather_data_extractor(response.json())
         return reminder_str_telegram, reminder_str_whatsapp, rain_probabilities
     except Exception as e:
-        print(f'Ошибка: {e}')
+        print(f'Ошибка:\n\t{e}')
 
-# Модуль провверки возможных осадков для списка подписанных на уведомления(ПРОДОЛЖЕНИЕ)
-def weather_data_extractor(data):
+
+def weather_data_extractor(data: Dict[str, Any]) -> Tuple[str, str, List[Tuple[float, datetime]]]:
+    """Модуль провверки возможных осадков для списка подписанных на уведомления(ПРОДОЛЖЕНИЕ)"""
     # Делаем флаги для суммирования смежных временных промежутков прогнозов
-    rain_forecast = False       # Флаг для отслеживания прогноза дождя
-    rain_start_time = None      # Время начала прогноза дождя
-    rain_end_time = None        # Время окончания прогноза дождя
-    total_feels_like = 0        # Общая температура для прогноза дождя
-    rain_count = 0              # Количество прогнозов дождя
-    rain_probabilities = []
-    reminder_str_telegram = ''
-    reminder_str_whatsapp = ''
+    rain_forecast: bool = False                 # Флаг для отслеживания прогноза дождя
+    rain_start_time: Optional[datetime] = None  # Время начала прогноза дождя
+    rain_end_time: Optional[datetime] = None    # Время окончания прогноза дождя
+    total_feels_like: float = 0                 # Общая температура для прогноза дождя
+    rain_count: int = 0                         # Количество прогнозов дождя
+    rain_probabilities: List[Tuple[float, datetime]] = []
+    reminder_str_telegram: str = ''
+    reminder_str_whatsapp: str = ''
     for i in data['list']:
         if i['pop'] * 100 > 50: # Проверка вероятность дождя больше 50% ?
             if not rain_forecast:
@@ -53,7 +55,8 @@ def weather_data_extractor(data):
                 rain_forecast = False
     return reminder_str_telegram, reminder_str_whatsapp, rain_probabilities
 
-def forecast_precipitation(city, user, number):
+def forecast_precipitation(city: str, user: str, number: str) -> Optional[str]:
+    """Запрос данных с API сервиса погоды"""
     url = f"http://api.openweathermap.org/data/2.5/forecast?q={city}&units=metric&cnt=56&lang=ru&appid={os.getenv('OPEN_WEATHER_MAP_API')}"
     response = requests.get(url).json()
     if response['cod'] == '404':
@@ -61,7 +64,7 @@ def forecast_precipitation(city, user, number):
     _text = weather_forecast(response, user)
     send_reminders(f'{_text}', number)
 
-def weather_forecast(response, user):
+def weather_forecast(response: Dict[str, Any], user: str) -> str:
     # Словарь для хранения температур, вероятности дождя и иконок погоды по дням
     daily_data = {}
     header = f'*☀️{user}*<_@weather_tool_bot_>\n\n'

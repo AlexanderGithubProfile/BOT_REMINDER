@@ -1,4 +1,6 @@
 import os
+from typing import Optional
+import datetime as dt
 from twilio.rest import Client
 from dotenv import load_dotenv
 load_dotenv()
@@ -9,7 +11,7 @@ TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
 TWILIO_PHONE_NUMBER = os.getenv('TWILIO_PHONE_NUMBER')
 
 # Функция для отправки напоминания
-def send_reminders(reminder_text, number, user=None):
+def send_reminders(reminder_text: str, number: str, user: Optional[str] = None) -> None:
     # Инициализация клиента Twilio
     client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
     if user is not None:
@@ -27,7 +29,7 @@ def send_reminders(reminder_text, number, user=None):
         print(f"Ошибка при отправке напоминания на номер {number}: {str(e)}")
 
 # Функция для отправки подтверждения установки напоминания через Twilio
-def send_confirmation(number, reminder_text=None, reminder_time=None, city=None, user=None):
+def send_confirmation(number: str, reminder_text: Optional[str] = None, reminder_time: Optional[dt.datetime] = None, city: Optional[str] = None, user: Optional[str] = None) -> None:
     # Инициализация клиента Twilio
     client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
     header = f'*✉️{(user)}*<_@weather_tool_bot_>\n'

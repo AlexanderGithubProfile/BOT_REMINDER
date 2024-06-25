@@ -1,11 +1,11 @@
 import os
 from aiogram import Bot
+from typing import Optional
 from dotenv import load_dotenv
 load_dotenv()
 
 # Отправка через Celery-планировщика пользователям из базы данных
-async def telegram_sender(number,reminder_text,
-                        reminder_time=None,name=None):
+async def telegram_sender(number: str, reminder_text: str, reminder_time: Optional[str] = None, name: Optional[str] = None) -> None:
     async with Bot(token=os.getenv('TELEGRAM_TOKEN')) as bot:
         if reminder_time is None:
             await bot.send_message(chat_id=number,

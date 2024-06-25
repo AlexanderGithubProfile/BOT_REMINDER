@@ -1,7 +1,8 @@
 from g4f.client import Client as G4FClient
 
-# Конвертирует текст запроса в ответ бота, используя GPT.
-def text_converting(prompt_text):
+
+def text_converting(prompt_text: str) -> str:
+    """Конвертирует текст запроса в ответ бота, используя GPT."""
     client = G4FClient()
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
