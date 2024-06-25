@@ -1,8 +1,7 @@
 import requests
 
-
-# Преобразования голоса
-async def text_to_speech(text):
+async def text_to_speech(text: str) -> None:
+    """Преобразования голоса"""
     CHUNK_SIZE = 1024
     url = "https://api.elevenlabs.io/v1/text-to-speech/TX3LPaxmHKxFdv7VOQHJ"
 

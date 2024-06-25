@@ -1,8 +1,9 @@
 import sys
 import logging
 import datetime
-from dateutil.parser import parse
+from typing import Optional
 from aiogram import types, html
+from dateutil.parser import parse
 from aiogram.types import Message
 
 from dbconnect import city_database, reminder_database
@@ -17,7 +18,7 @@ logging.basicConfig(level=logging.WARNING, stream=sys.stdout)
 load_dotenv()
 
 # Распознавание времени
-async def extract_date(message_body):
+async def extract_date(message_body: str) -> Optional[datetime.datetime]:
     try:
         reminder_time = parse(message_body, fuzzy_with_tokens=True,fuzzy=True)[0]
         if 'завтра' in message_body.lower():
@@ -29,7 +30,7 @@ async def extract_date(message_body):
         return None
 
 # Основной модуль извлечения инф из сообщений
-async def process_message(message: Message):
+async def process_message(message: Message) -> None:
     # Предобработка сообщения от пользователя
     number = message.chat.id
     user = message.from_user.full_name
@@ -66,7 +67,7 @@ async def process_message(message: Message):
         await message.answer_sticker('CAACAgIAAxkBAAIVwWZIlS0BmEwVcZOsutR5LXIEH8tUAAJjAAPb234AAYydBT3nQoPnNQQ')
 
 # Подтверждение подписки, проверяем прогноз на осадки
-async def send_confirmation_and_rain_check(message, number, user, city):
+async def send_confirmation_and_rain_check(message: Message, number: int, user: str, city: str) -> None:
     header = f'✉️<b> {user} </b><i>&lt;<a href="t. me/weather_tool_bot">@weather_tool_bot </a>&gt;</i>\n\n'
     confirm_text = (f"{header}Готово! Вы подписаны на уведомления об осадках в г.{html.bold(city)}")
     await message.answer(confirm_text, parse_mode='HTML')
@@ -74,7 +75,7 @@ async def send_confirmation_and_rain_check(message, number, user, city):
     await message.answer(await check_next_2_days(city))
 
 # Напоминание. Сохраняем и высылаем подтверждение
-async def save_reminder_and_send_confirm(message, number, user, original_text, header):
+async def save_reminder_and_send_confirm(message: Message, number: int, user: str, original_text: str, header: str) -> None:
     reminder_time = await extract_date(original_text)
     if reminder_time is not None:
         text_ = (f'{header}Ок напоминание на <b>{reminder_time.strftime("%H:%M %d.%m.%y")}</b> установлено')

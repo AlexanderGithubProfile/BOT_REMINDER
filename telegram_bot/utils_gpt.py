@@ -3,7 +3,7 @@ from g4f.client import AsyncClient
 
 
 # Функция преобразования текста напоминания в форму напоминания
-async def text_converting(prompt_text):
+async def text_converting(prompt_text: str) -> str:
     client = AsyncClient()
     response = await client.chat.completions.create(
         model="gpt-3.5-turbo",
@@ -21,7 +21,7 @@ async def text_converting(prompt_text):
 
 
 # Функция комментирования ботом напоминания пользователя
-async def text_commenting(prompt_text):
+async def text_commenting(prompt_text: str) -> str:
     client = AsyncClient()
     response = await client.chat.completions.create(
         model="gpt-3.5-turbo",

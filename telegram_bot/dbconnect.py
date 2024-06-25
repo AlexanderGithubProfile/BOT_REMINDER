@@ -1,11 +1,13 @@
 # Добавление записи напоминания
 import os
 import asyncpg
+from typing import Optional
+from datetime import datetime
 from dotenv import load_dotenv
 load_dotenv()
 
 # Добавление записи города для оповещений об осадках
-async def city_database(number, user, city, subscribe=True):
+async def city_database(number: int, user: str, city: str, subscribe: bool = True) -> None:
     conn = await asyncpg.connect(user=os.getenv('DB_USER'),
                                  password=os.getenv('DB_PASS'),
                                  database=os.getenv('DB_NAME'),
@@ -28,7 +30,7 @@ async def city_database(number, user, city, subscribe=True):
         await conn.close()
 
 # Добавление записи напоминания
-async def reminder_database(reminder_time, original_text, reminder_text, number, user):
+async def reminder_database(reminder_time: datetime, original_text: str, reminder_text: str, number: int, user: str) -> None:
     conn = await asyncpg.connect(user=os.getenv('DB_USER'),
                                  password=os.getenv('DB_PASS'),
                                  database=os.getenv('DB_NAME'),

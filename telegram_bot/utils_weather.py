@@ -4,20 +4,20 @@ import numpy as np
 from datetime import timedelta
 from datetime import datetime
 from datetime import datetime as dt
+from typing import Optional, Dict, Any, Tuple, List
 
-
-# API запрос к сервису погоды
-async def forecast_precipitation(city):
+async def forecast_precipitation(city: str) -> Optional[Dict[str, Any]]:
+    """API запрос к сервису погоды"""
     url = f"http://api.openweathermap.org/data/2.5/forecast?q={city}&units=metric&cnt=56&lang=ru&appid={os.getenv('OPEN_WEATHER_MAP_API')}"
     response = requests.get(url).json()
     if response['cod'] == '404':
         return None
     return response
 
-#Модуль обработки данных из сервиса погоды
-async def weather_forecast(response, user):
+async def weather_forecast(response: Dict[str, Any], user: str) -> str:
+    """Модуль обработки данных из сервиса погоды"""
     # Словарь для хранения температур, вероятности дождя и иконок погоды по дням
-    daily_data = {}
+    daily_data: Dict[dt.date, Dict[str, List[Any]]] = {}
     header = f'☀️<b> {user} </b><i>&lt;<a href="t. me/weather_tool_bot">@weather_tool_bot</a>&gt;</i>\n\n'
     weekday_names = {
         0: "Понедельник",
@@ -75,16 +75,17 @@ async def weather_forecast(response, user):
             header += f"{weekday_names[date.weekday()]}: <b>{min_temp:.0f}°-{max_temp:.0f}°</b> {weather_icons[max(data['weather_icons'], key=data['weather_icons'].count)]}\n"
     return header
 
-# Проверка вероятности осадков
-async def check_precipitation(city_name):
+
+async def check_precipitation(city_name: str) -> Optional[Dict[str, Any]]:
+    """Проверка вероятности осадков"""
     url = f"http://api.openweathermap.org/data/2.5/forecast?q={city_name}&units=metric&cnt=20&lang=ru&appid={os.getenv('OPEN_WEATHER_MAP_API')}"
     response = requests.get(url).json()
     if response['cod'] == '404':
         return None
     return response
 
-# Модуль провверки возможных осадков для списка подписанных на уведомления(НАЧАЛО)
-async def check_precipitation(city_name):
+async def check_precipitation(city_name: str) -> Optional[str]:
+    """Модуль провверки возможных осадков для списка подписанных на уведомления(НАЧАЛО)"""
     try:
         open_weather_token = os.getenv('OPEN_WEATHER_MAP_API')
         url = f"http://api.openweathermap.org/data/2.5/forecast?q={city_name}&units=metric&cnt=20&lang=ru&appid={open_weather_token}"
@@ -96,14 +97,14 @@ async def check_precipitation(city_name):
         print(f'Ошибка: {e}')
 
 # Модуль провверки возможных осадков для списка подписанных на уведомления(ПРОДОЛЖЕНИЕ)
-async def weather_data_extractor(data):
-    # Делаем флаги для суммирования смежных временных промежутков прогнозов
-    rain_forecast = False       # Флаг для отслеживания прогноза дождя
-    rain_start_time = None      # Время начала прогноза дождя
-    rain_end_time = None        # Время окончания прогноза дождя
-    total_feels_like = 0        # Общая температура для прогноза дождя
-    rain_count = 0              # Количество прогнозов дождя
-    rain_probabilities = []
+async def weather_data_extractor(data: Dict[str, Any]) -> Tuple[str, List[Tuple[float, dt]]]:
+    """Делаем флаги для суммирования смежных временных промежутков прогнозов"""
+    rain_forecast = False                   # Флаг для отслеживания прогноза дождя
+    rain_start_time: Optional[dt] = None    # Время начала прогноза дождя
+    rain_end_time: Optional[dt] = None      # Время окончания прогноза дождя
+    total_feels_like = 0                    # Общая температура для прогноза дождя
+    rain_count = 0                          # Количество прогнозов дождя
+    rain_probabilities: List[Tuple[float, dt]] = []
     reminder_str_telegram = ''
     for i in data['list']:
         if i['pop'] * 100 > 50: # Проверка вероятность дождя больше 50% ?
